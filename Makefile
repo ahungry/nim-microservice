@@ -18,5 +18,11 @@ depend:
 script:
 	nim c --compileOnly --genScript ./src/nim_microservice.nim
 
+docker-build:
+	docker build -t ahungry_nim_ms_alpine_build . -f Dockerfile
+
+docker-run:
+	docker run --rm -it -p8080:8080 ahungry_nim_ms_alpine_build:latest
+
 clean:
 	-rm -f nim_microservice.bin
