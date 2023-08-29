@@ -13,6 +13,13 @@ type Person = object
 func getData[T](ctx: Context, schema: typedesc[T]): T =
   ctx.request.body().fromJson(schema)
 
+proc ctrlc() {.noconv.} =
+  echo "\nClosing down the web server - goodbye!"
+  # do clean up stuff (this handler is needed for docker to close)
+  quit()
+
+setControlCHook(ctrlc)
+
 proc myDebugRequestMiddleware*(appName = "Prologue"): HandlerAsync =
   result = proc(ctx: Context) {.async.} =
     logging.debug(&"Req: {ctx.request.body()}")
