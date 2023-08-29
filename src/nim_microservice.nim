@@ -1,7 +1,7 @@
 import prologue
 import json
 import jsony
-import std/[logging, strformat]
+import std/[logging, strformat, times]
 
 type Summ = object
     x: int
@@ -15,12 +15,12 @@ func getData[T](ctx: Context, schema: typedesc[T]): T =
 
 proc myDebugRequestMiddleware*(appName = "Prologue"): HandlerAsync =
   result = proc(ctx: Context) {.async.} =
-    logging.info "debugRequestMiddleware->begin"
-    logging.debug(&"Received JSON: {ctx.request.body()}")
-    # do something before
+    logging.debug(&"Req: {ctx.request.body()}")
+    let t_start = cpuTime()
     await switch(ctx)
-    # do something after
-    logging.info "debugRequestMiddleware->End"
+    let t_end = cpuTime()
+    logging.debug(&"Time: {t_end - t_start:f} seconds")
+    logging.debug(&"Res: {ctx.response.body}") # This can be mutated if needed (set handled)
 
 proc hello*(ctx: Context) {.async.} =
   resp($ %* {"Hello": "World"}) # $ is shorthand to stringify, %* shorthand to jsonify
